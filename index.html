@@ -117,14 +117,23 @@
                 let _0xc2d3 = 0;
                 
                 Object.keys(_0xi1j2).forEach(_0xe4f5 => {
-                    if (_0xi1j2[_0xe4f5] !== null) {
-                        _0xc2d3++;
-                        const _0xg6h7 = _0xw5x6.positions[_0xe4f5];
-                        
+                    _0xc2d3++; // Count all questions
+                    const _0xg6h7 = _0xw5x6.positions[_0xe4f5];
+                    const _0xusr = _0xi1j2[_0xe4f5];
+                    
+                    if (_0xusr === null) {
+                        // User is neutral - prefer parties with neutral positions
                         if (_0xg6h7 === null) {
-                            _0xa9b1 += 0.5;
-                        } else if (_0xg6h7 === _0xi1j2[_0xe4f5]) {
-                            _0xy7z8++;
+                            _0xy7z8++; // Both neutral = perfect match
+                        } else {
+                            _0xa9b1 += 0.3; // Party has opinion, user neutral
+                        }
+                    } else {
+                        // User has opinion - use existing logic
+                        if (_0xg6h7 === null) {
+                            _0xa9b1 += 0.5; // Party neutral, user has opinion
+                        } else if (_0xg6h7 === _0xusr) {
+                            _0xy7z8++; // Perfect agreement
                         }
                     }
                 });
@@ -164,23 +173,30 @@
                 let _0xg5h6 = '';
                 
                 Object.keys(_0xi1j2).forEach(_0xi7j8 => {
-                    if (_0xi1j2[_0xi7j8] !== null) {
-                        const _0xk9l1 = _0x8g9h.find(_0xm2n3 => _0xm2n3.id === _0xi7j8);
-                        const _0xo4p5 = _0xi1j2[_0xi7j8];
-                        const _0xq6r7 = _0xw4x5.party.positions[_0xi7j8];
-                        
-                        if (_0xq6r7 === null) {
-                            _0xg5h6 += `<div class="position-item" style="background: #fff3cd; color: #856404; border-left: 3px solid #ffc107;">◐ ${_0xk9l1.title} (Mixed/evolving position)</div>`;
-                        } else if (_0xo4p5 === _0xq6r7) {
-                            _0xc1d2 += `<div class="position-item position-agree">✓ ${_0xk9l1.title}</div>`;
-                        } else {
-                            _0xe3f4 += `<div class="position-item position-disagree">✗ ${_0xk9l1.title}</div>`;
-                        }
+                    const _0xk9l1 = _0x8g9h.find(_0xm2n3 => _0xm2n3.id === _0xi7j8);
+                    const _0xo4p5 = _0xi1j2[_0xi7j8];
+                    const _0xq6r7 = _0xw4x5.party.positions[_0xi7j8];
+                    
+                    if (_0xo4p5 === null && _0xq6r7 === null) {
+                        // Both neutral - perfect match
+                        _0xc1d2 += `<div class="position-item position-agree">✓ ${_0xk9l1.title} (Both prefer flexible approach)</div>`;
+                    } else if (_0xo4p5 === null && _0xq6r7 !== null) {
+                        // User neutral, party has position
+                        _0xg5h6 += `<div class="position-item" style="background: #fff3cd; color: #856404; border-left: 3px solid #ffc107;">◐ ${_0xk9l1.title} (Mixed/evolving position)</div>`;
+                    } else if (_0xo4p5 !== null && _0xq6r7 === null) {
+                        // User has opinion, party neutral
+                        _0xg5h6 += `<div class="position-item" style="background: #fff3cd; color: #856404; border-left: 3px solid #ffc107;">◐ ${_0xk9l1.title} (Mixed/evolving position)</div>`;
+                    } else if (_0xo4p5 === _0xq6r7) {
+                        // Perfect agreement
+                        _0xc1d2 += `<div class="position-item position-agree">✓ ${_0xk9l1.title}</div>`;
+                    } else {
+                        // Disagreement
+                        _0xe3f4 += `<div class="position-item position-disagree">✗ ${_0xk9l1.title}</div>`;
                     }
                 });
                 
                 const _0xs8t9 = _0xw4x5.partialMatches > 0 
-                    ? `${_0xw4x5.matches} full matches + ${_0xw4x5.partialMatches} partial matches out of ${_0xw4x5.total} positions`
+                    ? `${_0xw4x5.matches} strong alignments + ${_0xw4x5.partialMatches.toFixed(1)} partial alignments out of ${_0xw4x5.total} positions`
                     : `${_0xw4x5.matches} out of ${_0xw4x5.total} positions align with your views`;
                 
                 _0xa8b9.innerHTML = `
@@ -194,8 +210,8 @@
                         ${_0xs8t9}
                     </div>
                     <div class="party-positions">
-                        ${_0xc1d2 ? `<div style="margin-bottom: 10px;"><strong>Strong Agreements:</strong></div>${_0xc1d2}` : ''}
-                        ${_0xg5h6 ? `<div style="margin-bottom: 10px;"><strong>Neutral/Mixed Positions:</strong></div>${_0xg5h6}` : ''}
+                        ${_0xc1d2 ? `<div style="margin-bottom: 10px;"><strong>Strong Alignments:</strong></div>${_0xc1d2}` : ''}
+                        ${_0xg5h6 ? `<div style="margin-bottom: 10px;"><strong>Partial Alignments:</strong></div>${_0xg5h6}` : ''}
                         ${_0xe3f4 ? `<div style="margin-bottom: 10px;"><strong>Disagreements:</strong></div>${_0xe3f4}` : ''}
                     </div>
                 `;
